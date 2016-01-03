@@ -27,13 +27,47 @@ public class Lexer {
 			return;
 		}
 		
+		Action action = null;
 		String token = new String();
+		int state_func = 0;
+		boolean append_next = true, state_string = false;
 		for (char c : code_chars) {
-			token += c;
-			System.out.println(token);
+			
+			//System.out.println(token);
+			
+			if (c == '\"' || c == '\'') {
+				append_next = false;
+				if (state_string) {
+					//System.out.println("Found ending of a string!");
+					if (state_func == 1) {
+						action.exec(token);
+						token = "";
+						state_func = 0;
+					}
+					state_string = false;
+				} else {
+					//System.out.println("Found beginning of a string!");
+					state_string = true;
+				}
+			} else if (Action.eq(token, "echo"))  {
+				//System.out.println("Found an echo!");
+				action = Action.ECHO_ACTION;
+				token = "";
+				state_func = 1;
+			}if (c == ' ') {
+				if (!state_string)
+					append_next = false;
+			}
+			
+			
+			if (append_next)
+				token += c;
+			else 
+				append_next = true;
 		}
 		
 	}
+	
 	
 	/** Reads and returns all the characters from a file 
 	 * @throws IOException */

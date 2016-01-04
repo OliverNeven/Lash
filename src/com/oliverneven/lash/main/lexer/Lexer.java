@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.oliverneven.lash.main.Lash;
+import com.oliverneven.lash.main.token.TokenData;
+import com.oliverneven.lash.main.token.TokenType;
 
 
 public class Lexer {
@@ -18,54 +20,41 @@ public class Lexer {
 	}
 	
 	/** Tokenizes the file */
-	public void tokenize() {
+	public ArrayList<TokenData> tokenize() {
 		ArrayList<Character> code_chars;
 		try {
 			code_chars = listCharacters(code_file);
 		} catch (IOException e) {
 			Lash.err(e);
-			return;
+			return null;
 		}
 		
-		Action action = null;
+		ArrayList<TokenData> token_data_list = new ArrayList<>();
 		String token = new String();
-		int state_func = 0;
-		boolean append_next = true, state_string = false;
 		for (char c : code_chars) {
+			token += c;
 			
 			//System.out.println(token);
 			
-			if (c == '\"' || c == '\'') {
-				append_next = false;
-				if (state_string) {
-					//System.out.println("Found ending of a string!");
-					if (state_func == 1) {
-						action.exec(token);
-						token = "";
-						state_func = 0;
-					}
-					state_string = false;
-				} else {
-					//System.out.println("Found beginning of a string!");
-					state_string = true;
-				}
-			} else if (Action.eq(token, "echo"))  {
-				//System.out.println("Found an echo!");
-				action = Action.ECHO_ACTION;
-				token = "";
-				state_func = 1;
-			}if (c == ' ') {
-				if (!state_string)
-					append_next = false;
+			TokenType matched_token_type = TokenType.checkMatch(token);
+			if (matched_token_type != TokenType.UNKOWN) {
+				
+				//System.out.println("Found a " + matched_token_type + " token!");
+				
+				if (matched_token_type.isCommand())
+					token_data_list.add(new TokenData(matched_token_type));
+				else if (matched_token_type == TokenType.STRING)
+					token_data_list.add(new TokenData(token.trim().substring(1, token.length() - 2), matched_token_type)); // Remove leading and tailing quotes
+				else
+					token_data_list.add(new TokenData(token.trim(), matched_token_type));
+				
+				token = new String();
 			}
 			
-			
-			if (append_next)
-				token += c;
-			else 
-				append_next = true;
 		}
 		
+		//System.out.println("Matched tokens: " + token_data_list);
+		return token_data_list;
 	}
 	
 	

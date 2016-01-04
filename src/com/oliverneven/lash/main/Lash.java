@@ -1,26 +1,42 @@
 package com.oliverneven.lash.main;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import com.oliverneven.lash.main.lexer.Lexer;
+import com.oliverneven.lash.main.token.TokenData;
 
 
 public class Lash {
 	
 	public static void main(String[] args) {
 		
-		// TODO Follow tutorial https://www.youtube.com/watch?v=LDDRn2f9fUk
+		// TODO: Follow tutorial https://www.youtube.com/watch?v=LDDRn2f9fUk
 		
-		/* TODO DEBUG CODE */
-		File code_file = new File("src\\sample\\hello_world.lash");
-		// File code_file = new File(args[0]);
+		File code_file = null;
+		
+		/* TODO: Remove debug code */ code_file = new File("src\\sample\\hello_world.lash");
+		/*
+		if (args.length >= 1)
+			code_file = new File(args[0]);
+		else {
+			err("No specified file to run");
+			exit(404);
+		}
+		*/
 		
 		if (!isValidFile(code_file, true)) {
 			exit(404);
 		}
 		
+		
 		Lexer lex = new Lexer(code_file);
-		lex.tokenize();
+		ArrayList<TokenData> tokens = lex.tokenize();
+		
+		//System.out.println(tokens + "\n");
+		
+		Parser par = new Parser(tokens);
+		par.parse();
 		
 		
 	}
@@ -55,7 +71,7 @@ public class Lash {
 		e.printStackTrace();
 	}
 	public static void err(String err) {
-		System.out.println("## " + err + "!");
+		System.out.println("ERROR: " + err + "!");
 	}
 	
 	/** Exits the program */

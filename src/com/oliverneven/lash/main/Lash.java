@@ -29,11 +29,12 @@ public class Lash {
 			exit(404);
 		}
 		
+		System.out.println("\n Tokenizing \n");
 		
 		Lexer lex = new Lexer(code_file);
 		ArrayList<TokenData> tokens = lex.tokenize();
 		
-		//System.out.println(tokens + "\n");
+		System.out.println("\n Parsing \n");
 		
 		Parser par = new Parser(tokens);
 		par.parse();
@@ -60,6 +61,8 @@ public class Lash {
 		}
 		return true;
 	}
+	
+	
 	
 	/** Prints a string to the screen */
 	public static void out(String s) {

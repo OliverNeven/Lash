@@ -24,7 +24,7 @@ public class Parser {
 
 			if (token.isCommand()) {
 				
-				//System.out.println("A " + token.getTokenType() + " command found!");
+				System.out.println("Found a " + token.getTokenType() + " command found!");
 				
 				ArrayList<TokenData> args = new ArrayList<>();
 				TokenData arg_token;
@@ -37,7 +37,8 @@ public class Parser {
 					args.add(arg_token);
 				}
 				
-				//System.out.println("Parsed: " + args + " as arguments for the command.");
+				System.out.println("Parsed: " + args + " as arguments for the " + token.getTokenType() + " command.");
+				
 				token.getTokenType().getAction().exec(args);
 			}
 			

@@ -6,18 +6,28 @@ import java.util.ArrayList;
 public enum TokenType {
 	
 	UNKOWN(),
+	ENDOFLINE("<EOF>", false),
 	TERMINATOR(";", false),
+	COMMENT("(¤.*¤)|(#.*" + ENDOFLINE.getRegex() + ")", true),
 	
-	ECHO("echo", new TokenAction() {
+	ECHO("ECHO", new TokenAction() {
 		public boolean exec(ArrayList<TokenData> args) {
-			System.out.println();
 			for (TokenData arg : args)
 				System.out.print(arg.getData().toString() + "");
+			System.out.println();
 			return true;
 		}
 	}),
 	
+	EXPRESSION("[0-9]+",true),
 	STRING("\".*\"", true);
+	
+	
+	
+	
+	
+	
+	
 	
 	private final String regex;
 	private final boolean isRegex;
@@ -60,6 +70,9 @@ public enum TokenType {
 	} 
 	public TokenAction getAction() {
 		return action;
+	}
+	public String getRegex() {
+		return regex;
 	}
 	
 	

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public enum TokenType {
 	
 	UNKOWN(),
-	ENDOFLINE("<EOF>", false),
+	ENDOFLINE("<LN>", false),
 	TERMINATOR(";", false),
 	COMMENT("(¤.*¤)|(#.*" + ENDOFLINE.getRegex() + ")", true),
 	
@@ -19,7 +19,7 @@ public enum TokenType {
 		}
 	}),
 	
-	EXPRESSION("[0-9]+",true),
+	EXPRESSION("\\(|\\)|\\d+\\.?\\d*|[+-/%^*]",true),
 	STRING("\".*\"", true);
 	
 	
@@ -59,7 +59,7 @@ public enum TokenType {
 	public static TokenType checkMatch(String token) {
 		token = token.trim();
 		for (TokenType token_type : values()) {
-			if (!token_type.isUnkown && ((token_type.isRegex && token.matches(token_type.regex)) || (!token_type.isRegex && token.equalsIgnoreCase(token_type.regex))))
+			if (!token_type.isUnkown && ((token_type.isRegex && token.matches(token_type.getRegex())) || (!token_type.isRegex && token.equalsIgnoreCase(token_type.getRegex()))))
 				return token_type;
 		}
 		return UNKOWN;

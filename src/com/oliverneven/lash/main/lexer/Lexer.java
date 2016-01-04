@@ -29,26 +29,50 @@ public class Lexer {
 			return null;
 		}
 		
+		String expr = new String();
 		ArrayList<TokenData> token_data_list = new ArrayList<>();
+		TokenType matched_token_type;
 		String token = new String();
 		for (char c : code_chars) {
 			token += c;
 			
 			System.out.println(token);
 			
-			TokenType matched_token_type = TokenType.checkMatch(token.trim());
+			
+			matched_token_type = TokenType.checkMatch(token.trim());
 			if (matched_token_type != TokenType.UNKOWN) {
 				
-				System.out.println("Found a " + matched_token_type + " token!");
+				System.out.println("Found a(n) " + matched_token_type + " token!");
 				
+				// If it's an expression, append it to the expression string
+				if (matched_token_type == TokenType.EXPRESSION)
+					expr += token;
+				
+				// If it's not an expression, but the expression string is not empty, add it to the list and clear the string
+				else if (!expr.isEmpty()) {
+					token_data_list.add(new TokenData(expr.trim(), TokenType.EXPRESSION));
+					expr = new String();
+				}
+					
+				// If it's a command, add it as one 
 				if (matched_token_type.isCommand())
 					token_data_list.add(new TokenData(matched_token_type));
-				else if (matched_token_type == TokenType.STRING)
-					token_data_list.add(new TokenData(token.trim().substring(1, token.length() - 2), matched_token_type)); // Remove leading and tailing quotes for strings
-				else if (matched_token_type == TokenType.COMMENT || matched_token_type == TokenType.ENDOFLINE) {} // Don't parse comments and end of line tags
+				
+				// If it's a string, remove quotes and trim it
+				else if (matched_token_type == TokenType.STRING) {
+					String str = token.trim();
+					token_data_list.add(new TokenData(str.substring(1, str.length() - 1), matched_token_type));
+				}
+				
+				// If it's a comment or end of line tag, do nothing
+				else if (matched_token_type == TokenType.COMMENT || matched_token_type == TokenType.ENDOFLINE || matched_token_type == TokenType.EXPRESSION);
+				
+				// If it's anything else, just trim it
 				else
 					token_data_list.add(new TokenData(token.trim(), matched_token_type));
 				
+				
+				// Clear the token
 				token = new String();
 			}
 			

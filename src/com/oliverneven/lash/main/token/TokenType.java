@@ -19,9 +19,9 @@ public enum TokenType {
 		}
 	}),
 	
-	EXPRESSION("\\(|\\)|\\d+\\.?\\d*|[+-/%^*]",true),
-	STRING("\".*\"", true);
+	EXPRESSION("\\(|\\)|\\d+\\.?\\d*|[+-/%^*]", true),
 	
+	STRING("\".*\"", true);
 	
 	
 	

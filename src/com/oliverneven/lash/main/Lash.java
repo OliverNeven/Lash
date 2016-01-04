@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.oliverneven.lash.main.lexer.Lexer;
+import com.oliverneven.lash.main.parser.Parser;
 import com.oliverneven.lash.main.token.TokenData;
 
 

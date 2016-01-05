@@ -6,15 +6,18 @@ import java.util.ArrayList;
 import com.oliverneven.lash.main.lexer.Lexer;
 import com.oliverneven.lash.main.parser.Parser;
 import com.oliverneven.lash.main.token.TokenData;
+import com.oliverneven.lash.main.variable.VariableRegistry;
 
 
 public class Lash {
 	
+	public final static VariableRegistry VARIABLE_REGISTRY = new VariableRegistry();
+	
 	public static void main(String[] args) {
 		
-		// TODO: Follow tutorial https://www.youtube.com/watch?v=LDDRn2f9fUk
+		// TODO: Follow tutorial https://www.youtube.com/watch?v=jA4gHFjHG0o
 		
-		File code_file = null;
+		File code_file;
 		
 		/* TODO: Remove debug code */ code_file = new File("src\\sample\\hello_world.lash");
 		/*
@@ -34,6 +37,8 @@ public class Lash {
 		
 		Lexer lex = new Lexer(code_file);
 		ArrayList<TokenData> tokens = lex.tokenize();
+		
+		// if (true) return;
 		
 		System.out.println("\n Parsing \n");
 		
@@ -66,8 +71,11 @@ public class Lash {
 	
 	
 	/** Prints a string to the screen */
-	public static void out(String s) {
+	public static void outln(String s) {
 		System.out.println(s);
+	}
+	public static void out(String s) {
+		System.out.print(s);
 	}
 	
 	/** Prints an error to the screen */

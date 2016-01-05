@@ -36,5 +36,8 @@ public class TokenData {
 	public boolean isCommand() {
 		return isCommand;
 	}
+	public boolean isOperationCommand() {
+		return token_type.isOperationCommand();
+	}
 	
 }

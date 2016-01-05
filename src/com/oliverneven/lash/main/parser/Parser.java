@@ -33,32 +33,46 @@ public class Parser {
 			}
 		
 		}
+		
 		// Parse commands
+		ArrayList<TokenData> args;
+		TokenData arg_token;
 		for (int i = 0; i < tokens.size(); i ++) {
 			TokenData token = tokens.get(i);
 			
-			//System.out.println(token);
+			// System.out.println(token);
 			
-			
-
 			if (token.isCommand()) {
 				
-				System.out.println("Found a " + token.getTokenType() + " command found!");
+				System.out.println("\nFound a(n) " + token.getTokenType() + " command found!");
 				
-				ArrayList<TokenData> args = new ArrayList<>();
-				TokenData arg_token;
-				for (i ++; i < tokens.size(); i ++) {
-					arg_token = tokens.get(i);
+				if (token.isOperationCommand()) {
 					
-					if (arg_token.getTokenType() == TokenType.TERMINATOR)
-						break;
+					args = new ArrayList<>();
+					args.add(tokens.get(i - 1));
+					args.add(tokens.get(i + 1));
+					i ++;
 					
-					args.add(arg_token);
+				} else {
+				
+					args = new ArrayList<>();
+					
+					for (i ++; i < tokens.size(); i ++) {
+						arg_token = tokens.get(i);
+						
+						if (arg_token.getTokenType() == TokenType.TERMINATOR)
+							break;
+						
+						args.add(arg_token);
+					}
+				
 				}
 				
-				System.out.println("Parsed: " + args + " as arguments for the " + token.getTokenType() + " command.");
+				System.out.println("Parsed: " + args + " as arguments for the " + token.getTokenType() + " command.\n~ Output:\n");
 				
 				token.getTokenType().getAction().exec(args);
+				
+				System.out.println();
 			}
 			
 		}

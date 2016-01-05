@@ -3,13 +3,18 @@ package com.oliverneven.lash.main.token;
 import java.util.ArrayList;
 
 import com.oliverneven.lash.main.Lash;
+import com.oliverneven.lash.main.parser.Parser;
 
 public enum TokenType {
+	
+	// Miscellaneous
 	
 	UNKOWN(),
 	ENDOFLINE("<LN>", false),
 	TERMINATOR(";", false),
 	COMMENT("(¤.*¤)|(#.*" + ENDOFLINE.getRegex() + ")", true),
+	
+	// Commands
 	
 	ECHO("ECHO", false, new TokenAction() {
 		public boolean exec(ArrayList<TokenData> args) {
@@ -38,8 +43,64 @@ public enum TokenType {
 		}
 	}),
 	
+	// Block statements
+	
+	IF("IF", false, new TokenAction(){
+		public boolean exec(ArrayList<TokenData> args) {
+			
+			ArrayList<TokenData> block_args;
+			Parser block_parser;
+			for (int i = 0; i < args.size(); i ++) {
+				TokenData arg = args.get(i);
+				
+				// If a block is found, parse it
+				if (arg.getTokenType() == TokenType.OPEN_BLOCK) {
+					block_args = new ArrayList<>();
+					
+					Lash.outln("{");
+					
+					for (i = i + 1; i < args.size(); i ++) {
+						TokenData block_arg = args.get(i);
+						
+						if (block_arg.getTokenType() == TokenType.CLOSE_BLOCK)
+							break;
+						
+						block_args.add(block_arg);
+					}
+					
+					block_parser = new Parser(block_args);
+					block_parser.parse();
+				
+					Lash.outln("}");
+				}
+				
+			}
+			
+			return true;	
+		}
+	}),
+	
+	// Block
+	
+	BLOCK("\\{(.*)\\}", true),
+	OPEN_BLOCK("<OBK>", false),
+	CLOSE_BLOCK("<CBK>", false),
+	
+	// Condition
+	
+	CONDITION_EQ("==", false, new TokenAction() {
+		public boolean exec(ArrayList<TokenData> args) {
+			return true;
+		}
+	}),
+	
+	// Variable
+	
 	VARIABLE("\\$[a-zA-Z][a-zA-Z0-9]*", true),
-	VARIABLE_ASSINGN_EQ("=", true, new TokenAction() {
+	
+	// Assignment
+	
+	ASSINGN_EQ("=", true, new TokenAction() {
 		public boolean exec(ArrayList<TokenData> args) {
 			
 			if (args.size() > 2) {
@@ -53,12 +114,16 @@ public enum TokenType {
 						data += arg.getData().toString();
 				}
 				Lash.VARIABLE_REGISTRY.assignVariable(args.get(0).getData().toString(), new TokenData(data, STRING));
-			} else 
-				Lash.VARIABLE_REGISTRY.assignVariable((String) args.get(0).getData(), args.get(1));
+			} else if (args.get(1).getTokenType() == VARIABLE) {
+				Lash.VARIABLE_REGISTRY.assignVariable(args.get(0).getData().toString(), Lash.VARIABLE_REGISTRY.getVariable(args.get(1).getData().toString()));
+			} else
+				Lash.VARIABLE_REGISTRY.assignVariable(args.get(0).getData().toString(), args.get(1));
 			
 			return true;
 		}
 	}),
+	
+	// Data types
 	
 	EXPRESSION("\\(|\\)|\\d+\\.?\\d*|[+-/%^*]", true), // Same for integers and floating points
 	STRING("\".*\"", true);

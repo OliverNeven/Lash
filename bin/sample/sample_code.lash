@@ -1,0 +1,3 @@
+if "hello" == "hello" {
+	echo "Hello, world!";
+}

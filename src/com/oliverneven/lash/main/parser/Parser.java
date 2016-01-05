@@ -40,12 +40,13 @@ public class Parser {
 		// Parse commands
 		ArrayList<TokenData> args;
 		TokenData arg_token;
+		int block_count = 0;
 		for (int i = 0; i < tokens.size(); i ++) {
 			TokenData token = tokens.get(i);
 			
-			//System.out.println(token);
+			// System.out.println(token);
 			
-			if (token.isCommand()) {
+			if (token.isCommand() || token.isTag()) {
 				
 				// System.out.println("Found a(n) " + token.getTokenType() + " command found!");
 				
@@ -57,7 +58,11 @@ public class Parser {
 					for (i ++; i < tokens.size(); i ++) {
 						arg_token = tokens.get(i);
 						
-						if (arg_token.getTokenType() == TokenType.TERMINATOR)
+						if (arg_token.getTokenType() == TokenType.OPEN_BLOCK)
+							block_count ++;
+						else if (arg_token.getTokenType() == TokenType.CLOSE_BLOCK)
+							block_count --;
+						else if (arg_token.getTokenType() == TokenType.TERMINATOR && block_count == 0)
 							break;
 						
 						args.add(arg_token);
@@ -70,7 +75,11 @@ public class Parser {
 					for (i ++; i < tokens.size(); i ++) {
 						arg_token = tokens.get(i);
 						
-						if (arg_token.getTokenType() == TokenType.TERMINATOR)
+						if (arg_token.getTokenType() == TokenType.OPEN_BLOCK)
+							block_count ++;
+						else if (arg_token.getTokenType() == TokenType.CLOSE_BLOCK)
+							block_count --;
+						else if (arg_token.getTokenType() == TokenType.TERMINATOR && block_count == 0)
 							break;
 						
 						args.add(arg_token);
@@ -80,7 +89,8 @@ public class Parser {
 				
 				System.out.println("Parsed " + args + " as arguments for the " + token.getTokenType() + " command");
 				
-				token.getTokenType().getAction().exec(args);
+				if (token.isCommand())
+					token.getTokenType().getAction().exec(args);
 				
 				//System.out.println();
 			}

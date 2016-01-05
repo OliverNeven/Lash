@@ -17,11 +17,11 @@ public class Lash {
 	
 	public static void main(String[] args) {
 		
-		// TODO: Follow tutorial https://www.youtube.com/watch?v=jA4gHFjHG0o
+		// TODO: Follow tutorial https://www.youtube.com/watch?v=pN5GYufp31E
 		
 		File code_file;
 		
-		/* TODO: Remove debug code */ code_file = new File("src\\sample\\hello_world.lash");
+		/* TODO: Remove debug code */ code_file = new File("src\\sample\\sample_code.lash");
 		/*
 		if (args.length >= 1)
 			code_file = new File(args[0]);

@@ -13,22 +13,31 @@ import com.oliverneven.lash.main.token.TokenType;
 
 public class Lexer {
 	
-	private File code_file;
+	private ArrayList<Character> code_chars;
+	private Lexer block_lexer;
 	
-	public Lexer(File code_file) {
-		this.code_file = code_file;
-	}
-	
-	/** Tokenizes the file */
-	public ArrayList<TokenData> tokenize() {
-		ArrayList<Character> code_chars;
-		
+	public Lexer(final File code_file) {
 		try {
 			code_chars = listCharacters(code_file);
 		} catch (IOException e) {
+			code_chars = new ArrayList<>();
 			Lash.err(e);
-			return null;
 		}
+	}
+	public Lexer(final String code_string) {
+		this.code_chars = new ArrayList<>();
+		for (char c : code_string.toCharArray())
+			this.code_chars.add(c);
+		
+		// System.out.println(code_chars);
+	}
+	public Lexer(final ArrayList<Character> code_chars) {
+		this.code_chars = code_chars;
+	}
+	
+	
+	/** Tokenizes the file */
+	public ArrayList<TokenData> tokenize() {
 		
 		String expression = new String(), variable_name = new String();
 		ArrayList<TokenData> token_data_list = new ArrayList<>();
@@ -37,7 +46,7 @@ public class Lexer {
 		for (int i = 0; i < code_chars.size(); i ++) {
 			token += code_chars.get(i);
 			
-			// System.out.println(token);
+			//System.out.println(token);
 			
 			matched_token_type = TokenType.checkMatch(token.trim());
 			if (matched_token_type != TokenType.UNKOWN) {
@@ -45,8 +54,8 @@ public class Lexer {
 				System.out.println("Found a(n) " + matched_token_type + " token!");
 					
 				// If it's a command, add it as one 
-				if (matched_token_type.isCommand())
-					token_data_list.add(new TokenData(matched_token_type));
+				if (matched_token_type.isCommand() && !matched_token_type.isOperationCommand())
+					token_data_list.add(new TokenData(matched_token_type, false));
 				
 				// If it's an expression, append it to the expression string
 				else if (matched_token_type == TokenType.EXPRESSION)
@@ -82,6 +91,30 @@ public class Lexer {
 					
 					//variable_name += token;
 					token_data_list.add(new TokenData(token.trim(), TokenType.VARIABLE));
+				}
+				
+				// If it's a block, tokenize and add it to the list
+				else if (matched_token_type == TokenType.BLOCK) {
+					
+					System.out.println("{");
+					
+					block_lexer = new Lexer(token.trim().substring(1, token.trim().length() - 1));
+					ArrayList<TokenData> block_token_data_list = block_lexer.tokenize();
+					
+					token_data_list.add(new TokenData(TokenType.OPEN_BLOCK, true));
+					for (TokenData block_token_data : block_token_data_list) {
+						token_data_list.add(block_token_data);
+					}	
+					token_data_list.add(new TokenData(TokenType.CLOSE_BLOCK, true));
+					token_data_list.add(new TokenData(";", TokenType.TERMINATOR));
+					
+					System.out.println("}");
+					
+				}
+				
+				else if (matched_token_type == TokenType.ASSINGN_EQ && code_chars.get(i + 1) == '=') {
+					token_data_list.add(new TokenData(TokenType.CONDITION_EQ, true));
+					i ++;
 				}
 				
 				// If it's a comment or end of line tag, do nothing
@@ -124,14 +157,6 @@ public class Lexer {
 		br.close();
 		
 		return file_characters;
-	}
-	
-	
-	public File getFile() {
-		return code_file;
-	}
-	public void setFile(File code_file) {
-		this.code_file = code_file;
 	}
 	
 	

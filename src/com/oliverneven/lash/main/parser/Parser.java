@@ -2,6 +2,7 @@ package com.oliverneven.lash.main.parser;
 
 import java.util.ArrayList;
 
+import com.oliverneven.lash.main.Lash;
 import com.oliverneven.lash.main.arithmetic.ArithmeticEvaluation;
 import com.oliverneven.lash.main.token.TokenData;
 import com.oliverneven.lash.main.token.TokenType;
@@ -20,6 +21,7 @@ public class Parser {
 	/** Parses the tokens */
 	public void parse() {
 		
+		/*
 		// Evaluate expressions
 		for (int i = 0; i < tokens.size(); i ++) {
 			TokenData token = tokens.get(i);
@@ -33,6 +35,7 @@ public class Parser {
 			}
 		
 		}
+		*/
 		
 		// Parse commands
 		ArrayList<TokenData> args;
@@ -40,18 +43,25 @@ public class Parser {
 		for (int i = 0; i < tokens.size(); i ++) {
 			TokenData token = tokens.get(i);
 			
-			// System.out.println(token);
+			//System.out.println(token);
 			
 			if (token.isCommand()) {
 				
-				System.out.println("\nFound a(n) " + token.getTokenType() + " command found!");
+				// System.out.println("Found a(n) " + token.getTokenType() + " command found!");
 				
 				if (token.isOperationCommand()) {
 					
 					args = new ArrayList<>();
 					args.add(tokens.get(i - 1));
-					args.add(tokens.get(i + 1));
-					i ++;
+					
+					for (i ++; i < tokens.size(); i ++) {
+						arg_token = tokens.get(i);
+						
+						if (arg_token.getTokenType() == TokenType.TERMINATOR)
+							break;
+						
+						args.add(arg_token);
+					}
 					
 				} else {
 				
@@ -68,11 +78,11 @@ public class Parser {
 				
 				}
 				
-				System.out.println("Parsed: " + args + " as arguments for the " + token.getTokenType() + " command.\n~ Output:\n");
+				System.out.println("Parsed " + args + " as arguments for the " + token.getTokenType() + " command");
 				
 				token.getTokenType().getAction().exec(args);
 				
-				System.out.println();
+				//System.out.println();
 			}
 			
 		}

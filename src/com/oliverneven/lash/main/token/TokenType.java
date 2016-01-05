@@ -1,7 +1,8 @@
 package com.oliverneven.lash.main.token;
 
 import java.util.ArrayList;
-import com.oliverneven.lash.main.Lash;;
+
+import com.oliverneven.lash.main.Lash;
 
 public enum TokenType {
 	
@@ -18,11 +19,21 @@ public enum TokenType {
 					Lash.err("The argument " + arg.getTokenType() + " has no data to be printed");
 					return false;
 				} else if (arg.getTokenType() == VARIABLE) {
-					Lash.out(Lash.VARIABLE_REGISTRY.getVariableData(arg.getData().toString()).getData().toString() + "");
+					Lash.out(Lash.VARIABLE_REGISTRY.getVariable(arg.getData().toString()).getData().toString() + "");
 				} else {
 					Lash.out(arg.getData().toString() + "");
 				}
 			Lash.outln("");
+			return true;
+		}
+	}),
+	INPUT("INPUT", false, new TokenAction(){
+		public boolean exec(ArrayList<TokenData> args) {
+			
+			TokenData input_variable = args.remove(args.size() - 1);
+			ECHO.getAction().exec(args);
+			Lash.VARIABLE_REGISTRY.assignVariable(input_variable.getData().toString(), new TokenData(Lash.RAW_INPUT.nextLine(), STRING));
+			
 			return true;
 		}
 	}),
@@ -31,7 +42,19 @@ public enum TokenType {
 	VARIABLE_ASSINGN_EQ("=", true, new TokenAction() {
 		public boolean exec(ArrayList<TokenData> args) {
 			
-			Lash.VARIABLE_REGISTRY.assignVariable((String) args.get(0).getData(), args.get(1));
+			if (args.size() > 2) {
+				String data = "";
+				for (int i = 1; i < args.size(); i ++) {
+					TokenData arg = args.get(i);
+					
+					if (arg.getTokenType() == VARIABLE)
+						data += Lash.VARIABLE_REGISTRY.getVariable(arg.getData().toString()).getData().toString();
+					else
+						data += arg.getData().toString();
+				}
+				Lash.VARIABLE_REGISTRY.assignVariable(args.get(0).getData().toString(), new TokenData(data, STRING));
+			} else 
+				Lash.VARIABLE_REGISTRY.assignVariable((String) args.get(0).getData(), args.get(1));
 			
 			return true;
 		}

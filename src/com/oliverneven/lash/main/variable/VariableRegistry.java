@@ -29,9 +29,9 @@ public class VariableRegistry {
 	}
 	
 	/** Returns a variable's containing data */
-	public TokenData getVariableData(final String varialbe_name) {
+	public TokenData getVariable(final String varialbe_name) {
 		if (!hasVariable(varialbe_name)) {
-			Lash.err(varialbe_name + " isn't an initialized variable");
+			Lash.err("$" + varialbe_name + " is not a declared variable");
 			return null;
 		} else {
 			return variable_map.get(varialbe_name);

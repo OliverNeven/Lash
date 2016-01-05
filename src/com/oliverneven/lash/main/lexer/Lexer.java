@@ -39,7 +39,6 @@ public class Lexer {
 			
 			// System.out.println(token);
 			
-			
 			matched_token_type = TokenType.checkMatch(token.trim());
 			if (matched_token_type != TokenType.UNKOWN) {
 				
@@ -49,12 +48,6 @@ public class Lexer {
 				if (matched_token_type.isCommand())
 					token_data_list.add(new TokenData(matched_token_type));
 				
-				// If it's a string, remove quotes and trim it
-				else if (matched_token_type == TokenType.STRING) {
-					String str = token.trim();
-					token_data_list.add(new TokenData(str.substring(1, str.length() - 1), matched_token_type));
-				}
-				
 				// If it's an expression, append it to the expression string
 				else if (matched_token_type == TokenType.EXPRESSION)
 					expression += token;
@@ -63,6 +56,13 @@ public class Lexer {
 				else if (!expression.isEmpty()) {
 					token_data_list.add(new TokenData(expression.trim(), TokenType.EXPRESSION));
 					expression = new String();
+					token_data_list.add(new TokenData(token.trim(), matched_token_type));
+				}
+				
+				// If it's a string, remove quotes and trim it
+				else if (matched_token_type == TokenType.STRING) {
+					String str = token.trim();
+					token_data_list.add(new TokenData(str.substring(1, str.length() - 1), matched_token_type));
 				}
 				
 				// If it's a variable, keep adding characters as a variable name, until an invalid variable name shows up.

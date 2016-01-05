@@ -2,6 +2,7 @@ package com.oliverneven.lash.main;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import com.oliverneven.lash.main.lexer.Lexer;
 import com.oliverneven.lash.main.parser.Parser;
@@ -12,6 +13,7 @@ import com.oliverneven.lash.main.variable.VariableRegistry;
 public class Lash {
 	
 	public final static VariableRegistry VARIABLE_REGISTRY = new VariableRegistry();
+	public final static Scanner RAW_INPUT = new Scanner(System.in);
 	
 	public static void main(String[] args) {
 		

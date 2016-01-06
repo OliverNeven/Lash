@@ -9,7 +9,7 @@ public enum TokenType {
 	
 	// Miscellaneous
 	
-	UNKOWN(),
+	UNKNOWN(),
 	ENDOFLINE("<LN>", false),
 	TERMINATOR(";", false),
 	COMMENT("(¤.*¤)|(#.*" + ENDOFLINE.getRegex() + ")", true),
@@ -47,44 +47,15 @@ public enum TokenType {
 	
 	IF("IF", false, new TokenAction(){
 		public boolean exec(ArrayList<TokenData> args) {
-			
-			ArrayList<TokenData> block_args;
-			Parser block_parser;
-			for (int i = 0; i < args.size(); i ++) {
-				TokenData arg = args.get(i);
-				
-				// If a block is found, parse it
-				if (arg.getTokenType() == TokenType.OPEN_BLOCK) {
-					block_args = new ArrayList<>();
-					
-					Lash.outln("{");
-					
-					for (i = i + 1; i < args.size(); i ++) {
-						TokenData block_arg = args.get(i);
-						
-						if (block_arg.getTokenType() == TokenType.CLOSE_BLOCK)
-							break;
-						
-						block_args.add(block_arg);
-					}
-					
-					block_parser = new Parser(block_args);
-					block_parser.parse();
-				
-					Lash.outln("}");
-				}
-				
-			}
-			
-			return true;	
+			return true;
 		}
 	}),
 	
 	// Block
 	
 	BLOCK("\\{(.*)\\}", true),
-	OPEN_BLOCK("<OBK>", false),
-	CLOSE_BLOCK("<CBK>", false),
+	BLOCK_OPEN("{", false),
+	BLOCK_CLOSE("}", false),
 	
 	// Condition
 	
@@ -168,7 +139,7 @@ public enum TokenType {
 			if (!token_type.isUnkown && ((token_type.isRegex && token.matches(token_type.getRegex())) || (!token_type.isRegex && token.equalsIgnoreCase(token_type.getRegex()))))
 				return token_type;
 		}
-		return UNKOWN;
+		return UNKNOWN;
 	}
 	
 	public boolean isCommand() {

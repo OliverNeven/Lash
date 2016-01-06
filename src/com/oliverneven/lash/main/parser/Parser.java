@@ -1,54 +1,44 @@
 package com.oliverneven.lash.main.parser;
 
-import java.util.ArrayList;
-
-import com.oliverneven.lash.main.Lash;
-import com.oliverneven.lash.main.arithmetic.ArithmeticEvaluation;
-import com.oliverneven.lash.main.token.TokenData;
-import com.oliverneven.lash.main.token.TokenType;
+import com.oliverneven.lash.main.token.TokenBlock;
 
 
 public class Parser {
 	
-	private ArrayList<TokenData> tokens;
-	private ArithmeticEvaluation arithmetic_eval;
+	private TokenBlock main_block;
 	
-	public Parser(final ArrayList<TokenData> tokens) {
-		this.tokens = tokens;
-		this.arithmetic_eval = new ArithmeticEvaluation();
+	public Parser(final TokenBlock main_block) {
+		this.main_block = main_block;
 	}
 	
 	/** Parses the tokens */
 	public void parse() {
 		
-		/*
-		// Evaluate expressions
-		for (int i = 0; i < tokens.size(); i ++) {
-			TokenData token = tokens.get(i);
-			
-			if (token.getTokenType() == TokenType.EXPRESSION) {
-				
-				System.out.println("Expression found!");
-				
-				double result = arithmetic_eval.evalInfix((String) token.getData());
-				tokens.set(i, new TokenData(result, TokenType.EXPRESSION));
-			}
-		
-		}
-		*/
-		
 		// Parse commands
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		/*
 		ArrayList<TokenData> args;
 		TokenData arg_token;
 		int block_count = 0;
 		for (int i = 0; i < tokens.size(); i ++) {
 			TokenData token = tokens.get(i);
 			
-			// System.out.println(token);
+			//System.out.println(token);
 			
-			if (token.isCommand() || token.isTag()) {
+			if (token.isCommand() || token.isTag() || token.isOperationCommand()) {
 				
-				// System.out.println("Found a(n) " + token.getTokenType() + " command found!");
+				System.out.println("Found a(n) " + token.getTokenType() + " command found!");
 				
 				if (token.isOperationCommand()) {
 					
@@ -58,15 +48,13 @@ public class Parser {
 					for (i ++; i < tokens.size(); i ++) {
 						arg_token = tokens.get(i);
 						
-						if (arg_token.getTokenType() == TokenType.OPEN_BLOCK)
-							block_count ++;
-						else if (arg_token.getTokenType() == TokenType.CLOSE_BLOCK)
-							block_count --;
-						else if (arg_token.getTokenType() == TokenType.TERMINATOR && block_count == 0)
+						if (arg_token.getTokenType() == TokenType.TERMINATOR && block_count == 0)
 							break;
 						
 						args.add(arg_token);
 					}
+					
+					
 					
 				} else {
 				
@@ -75,11 +63,7 @@ public class Parser {
 					for (i ++; i < tokens.size(); i ++) {
 						arg_token = tokens.get(i);
 						
-						if (arg_token.getTokenType() == TokenType.OPEN_BLOCK)
-							block_count ++;
-						else if (arg_token.getTokenType() == TokenType.CLOSE_BLOCK)
-							block_count --;
-						else if (arg_token.getTokenType() == TokenType.TERMINATOR && block_count == 0)
+						if (arg_token.getTokenType() == TokenType.TERMINATOR && block_count == 0)
 							break;
 						
 						args.add(arg_token);
@@ -89,14 +73,23 @@ public class Parser {
 				
 				System.out.println("Parsed " + args + " as arguments for the " + token.getTokenType() + " command");
 				
-				if (token.isCommand())
+				if (token.isCommand() || token.isOperationCommand())
 					token.getTokenType().getAction().exec(args);
 				
 				//System.out.println();
+				
+			} else if (token.isBlock()) {
+				
+				System.out.println("{");
+				
+				new Parser((TokenBlock) token.getData()).parse();
+				
+				System.out.println("}");
+				
 			}
 			
 		}
-		
+		*/
 	}
 	
 }

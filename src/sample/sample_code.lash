@@ -1,3 +1,5 @@
-if "hello" == "hello" {
-	echo "Hello, world!";
-}
+echo "Hello!";
+{
+	echo "World!";
+};
+echo "Hello, echo!";

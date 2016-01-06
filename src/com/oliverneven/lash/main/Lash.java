@@ -1,12 +1,11 @@
 package com.oliverneven.lash.main;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 import com.oliverneven.lash.main.lexer.Lexer;
 import com.oliverneven.lash.main.parser.Parser;
-import com.oliverneven.lash.main.token.TokenData;
+import com.oliverneven.lash.main.token.TokenBlock;
 import com.oliverneven.lash.main.variable.VariableRegistry;
 
 
@@ -35,17 +34,17 @@ public class Lash {
 			exit(404);
 		}
 		
-		System.out.println("\n Tokenizing \n");
+		System.out.println("\n\tTokenizing\n");
 		
-		Lexer lex = new Lexer(code_file);
-		ArrayList<TokenData> tokens = lex.tokenize();
+		Lexer lexer = new Lexer(code_file);
+		TokenBlock token_block = lexer.lex(true);
 		
 		// if (true) return;
 		
-		System.out.println("\n Parsing \n");
+		System.out.println("\n\tParsing\n");
 		
-		Parser par = new Parser(tokens);
-		par.parse();
+		Parser parser = new Parser(token_block);
+		parser.parse();
 		
 		
 	}

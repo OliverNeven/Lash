@@ -26,6 +26,55 @@ public class TokenBlock {
 	}
 	
 	
+	/** Returns the rest of tokens, from a given index, in the list until, and except, the given terminating token is found */
+	public ArrayList<TokenData> charsUntilToken(int start_index, TokenType terminating_token) {
+		
+		// The array to return
+		final ArrayList<TokenData> rest_of_token = new ArrayList<>();
+		
+		// Iterate through the list, starting at the given index
+		for (int i = start_index; i < token_list.size(); i ++) {
+			
+			// Store the current token
+			TokenData token = token_list.get(i);
+			
+			// If the token is the terminating token, return the array
+			if (token.getTokenType() == terminating_token)
+				return rest_of_token;
+			
+			// ... else add the token to the array
+			else rest_of_token.add(token);
+		}
+		
+		// No tokens are left, return the array
+		return rest_of_token;
+	}
+	
+	/** Returns the rest of characters, from a given index, in the list until a non match is found with the given regex */
+	public ArrayList<Character> charsUntilNonMatch(int start_index, String regex) {
+		
+		// The array to return
+		final ArrayList<Character> rest_of_chars = new ArrayList<>();
+		
+		// Iterate through the list, starting at the given index
+		for (int i = start_index; i < char_list.size(); i ++) {
+			
+			// Store the current token
+			char c = char_list.get(i);
+			
+			// If the regex if matched, return the array
+			if (!Character.toString(c).matches(regex))
+				return rest_of_chars;
+			
+			// ... else add the token to the array
+			else rest_of_chars.add(c);
+		}
+		
+		// No tokens are left, return the array
+		return rest_of_chars;
+	}
+	
+	
 	public ArrayList<TokenData> getTokenList() {
 		return token_list;
 	}
@@ -47,4 +96,5 @@ public class TokenBlock {
 	public String toString() {
 		return new String("{"+ token_list +"}");	
 	}
+		
 }

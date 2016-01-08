@@ -44,7 +44,7 @@ public class TokenData {
 	public boolean isTag() {
 		return isTag;
 	}
-	public boolean isOperationCommand() {
+	public boolean isOperation() {
 		return token_type.isOperationCommand();
 	}
 	public boolean isBlock() {

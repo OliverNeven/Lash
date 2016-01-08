@@ -71,7 +71,7 @@ public enum TokenType {
 	
 	// Assignment
 	
-	ASSINGN_EQ("=", true, new TokenAction() {
+	OP_EQUALS("=", true, new TokenAction() {
 		public boolean exec(ArrayList<TokenData> args) {
 			
 			if (args.size() > 2) {

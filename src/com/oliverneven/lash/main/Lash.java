@@ -14,6 +14,8 @@ public class Lash {
 	public final static VariableRegistry VARIABLE_REGISTRY = new VariableRegistry();
 	public final static Scanner RAW_INPUT = new Scanner(System.in);
 	
+	private final static boolean DEBUG = true;
+	
 	public static void main(String[] args) {
 		
 		// TODO: Follow tutorial https://www.youtube.com/watch?v=pN5GYufp31E
@@ -37,14 +39,14 @@ public class Lash {
 		System.out.println("\n\tTokenizing\n");
 		
 		Lexer lexer = new Lexer(code_file);
-		TokenBlock token_block = lexer.lex(true);
+		TokenBlock token_block = lexer.lex(DEBUG);
 		
 		// if (true) return;
 		
 		System.out.println("\n\tParsing\n");
 		
 		Parser parser = new Parser(token_block);
-		parser.parse();
+		parser.parse(DEBUG);
 		
 		
 	}
@@ -83,8 +85,16 @@ public class Lash {
 	public static void err(Exception e) {
 		e.printStackTrace();
 	}
+	public static void err(Exception e, int exit_code) {
+		err(e);
+		exit(exit_code);
+	}
 	public static void err(String err) {
 		System.out.println("ERROR: " + err + "!");
+	}
+	public static void err(String err, int exit_code) {
+		err(err);
+		exit(exit_code);
 	}
 	
 	/** Exits the program */

@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.oliverneven.lash.main.Lash;
 import com.oliverneven.lash.main.token.TokenBlock;
@@ -55,17 +57,22 @@ public class Lexer {
 		int block_index = 0;
 		for (int i = 0; i < main_block.getCharList().size(); i ++) {
 			String c = main_block.getCharList().get(i).toString();	// Set the current character to c
-			t += c; t = t.trim();									// Add the current character to t and trim t
+			t += c;													// Add the current character to t
 			boolean reset = true;									// If t is allowed to be reset
 			
 			// Print the current token
-			// if (v) System.out.println(t);
+			if (v) System.out.println(t);
 			
 			// Check if there is a match with the current token, or a UNKOWN token will be returned
 			TokenType match = TokenType.checkMatch(t);
 			
-			// Print the match
-			if (v && match != TokenType.UNKNOWN && match != TokenType.BLOCK && match != TokenType.BLOCK_OPEN && match != TokenType.BLOCK_CLOSE) System.out.format("Found a(n) %s token.\n", match.toString());
+			// Print the match, unless some special tokens are found
+			if (v && match != TokenType.UNKNOWN
+				  && match != TokenType.BLOCK
+				  && match != TokenType.BLOCK_OPEN
+				  && match != TokenType.BLOCK_CLOSE
+				  && match != TokenType.VARIABLE)
+				System.out.format("Found a(n) %s token.\n", match.toString());
 			
 			
 			
@@ -109,6 +116,35 @@ public class Lexer {
 				
 			}
 			
+			/* VARIALE */
+			
+			// If a variable is found
+			if (match == TokenType.VARIABLE) {
+				System.out.format("Found a(n) %s token.\n", match.toString());
+				
+				// Get all characters until a illegal variable name variable is found
+				ArrayList<Character> variable_name_chars = main_block.charsUntilNonMatch(i ++, "[a-zA-Z0-9_]");
+				
+				// Increment the character loop index with the size of the fetched character list, subtracted by 1
+				i += variable_name_chars.size() - 2;
+				
+				// Convert the character list to a string, and add it as a variable name to the main block
+				main_block.addToken(new TokenData(stringOfList(variable_name_chars), TokenType.VARIABLE));	
+			}
+			
+			/* Data types */
+			
+			// If a string is found
+			else if (match == TokenType.STRING) {
+				
+				// Trim and remove quotes from the string
+				t = t.trim();
+				t = t.substring(1, t.length() - 1);
+				
+				// Add the string to the main block
+				main_block.addToken(new TokenData(t, TokenType.STRING));
+			}
+			
 			/* TAGS */
 			
 			// If an unknown token tag is found
@@ -135,6 +171,20 @@ public class Lexer {
 	}
 	
 	
+	
+	/** Return a string of a character list */
+	private String stringOfList(ArrayList<Character> list) {
+		
+		// String to return
+		String word = new String();
+		
+		// Iterate through the list, and add each item to the string
+		for (char c : list)
+			word += c;
+		
+		// Return the string
+		return word;	
+	}
 	
 	
 	

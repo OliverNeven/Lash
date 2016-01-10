@@ -12,7 +12,7 @@ public enum TokenType {
 	UNKNOWN(),
 	ENDOFLINE("<LN>", false),
 	TERMINATOR(";", false),
-	COMMENT("(¤.*¤)|(#.*" + ENDOFLINE.getRegex() + ")", true),
+	COMMENT("((##).*(##))|(#.*" + ENDOFLINE.getRegex() + ")", true),
 	
 	// Commands
 	
@@ -94,7 +94,7 @@ public enum TokenType {
 	
 	// Data types
 	
-	EXPRESSION("<((?:\\d*|\\+|-|\\*|\\/|%|\\^|\\(|\\)|\\$[a-zA-Z_][a-zA-Z0-9_]*)\\s*)*>", true),
+	EXPRESSION("<(\\d*\\.?(?:[0-9]|\\+|-|\\*|\\/|%|\\^|\\(|\\)|\\$[a-zA-Z_][a-zA-Z0-9_]*)\\s*)*>", true),
 	CONDITION("\\[(?:true|false|\\s+|\\$[a-zA-Z_][a-zA-Z0-9_]*|(?:=|\\||&|<|>){2}|<((?:\\d*|\\+|-|\\*|\\/|%|\\^|\\(|\\)|\\$[a-zA-Z_][a-zA-Z0-9_]*)\\s*)*>|\".*\")*\\]", true),
 	NUM("<NUM>", false),
 	BOOL("<BOOL>", false),

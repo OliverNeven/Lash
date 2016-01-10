@@ -116,6 +116,15 @@ public class Lexer {
 				
 			}
 			
+			/* COMMENT */
+			
+			else if (match == TokenType.COMMENT) {
+				
+				if (t.trim().startsWith("##") && !t.trim().endsWith("##"))
+					reset = false;
+				
+			}
+			
 			/* VARIALE */
 			
 			// If a variable is found

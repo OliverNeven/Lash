@@ -1,0 +1,74 @@
+The Grammer for the Lash programming language.
+
+Whitespace are ignored, unless they are inside a string.
+Cases are ignored for commands, but not for variables.
+Comments are ignored by the lexer.
+
+Single line comment:
+	Any character sequence presided by an octothorp/pound sign.
+	' # single line comment... '
+
+Multi line comment:
+	Any character sequence, including line breaks, contained inside two octothorp/pound sign.
+	' ## multi line comment... ## '
+
+Terminator:
+	A semicolon.
+	' ; '
+
+String:
+	Any character sequence contained inside double quotes.
+	' "Hello, world!" '
+	
+Number & Expression:
+	A arithmetic expression infix syntax contained inside less and grater than brackets.
+	' <1+1> <-2>'
+
+Boolean & Condition:
+	A conditional expression infix syntax contained inside square brackets.
+	' [true] [false] [<8> >> <2 + 2>] '
+
+Block:
+	A block of code contained inside curly brackets.
+	' { body... } '
+
+Variable declaration:
+	A dollar sign followed sequence of letters, numbers and underscores.
+	Though the first character must be a letter.
+	' $foo_0 '
+	
+Variable assignment:
+	' [Variable] = [String, Number, Boolean, Block or Function]* '
+
+Commands:
+	
+	Echo command:
+		Echos out any following arguments.
+		' ECHO [String, Number, Boolean, Block or Function]* '
+		
+	Input command:
+		Assigns a variable with an inputed string.
+		' INPUT [String] [Variable] '
+		
+Block statements:
+	
+	If statement:
+		Executes a block, if and only if it's following condition is true.
+		' IF [Boolean] [Block]'
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

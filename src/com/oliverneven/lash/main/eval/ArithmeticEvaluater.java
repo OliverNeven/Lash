@@ -1,9 +1,9 @@
-package com.oliverneven.lash.main.arithmetic;
+package com.oliverneven.lash.main.eval;
 
 import java.util.Stack;
 
 
-public class ArithmeticEvaluation {
+public class ArithmeticEvaluater {
 	
 	private Stack<Operators> operators;
 	private Stack<String> postfix;
@@ -11,17 +11,18 @@ public class ArithmeticEvaluation {
 	private int openParentheseAmount;
 	
 	/** Postfix evaluation **/
-	public double evalInfix(String infix) {
-		if (!(infix.startsWith("(") && infix.endsWith("")))
-			infix = "(" + infix + ")";
+	public double evalInfix(String infix, boolean v) {
 		
-		Stack<String> postfix = infixToPostfix(infix.trim());
-		double result = evalPostfix(postfix); 
+		Stack<String> postfix = infixToPostfix(infix.trim(), v);
+		
+		if (v) System.out.format("The postfix of the infix %s is equal to %s.\n", infix, postfix);
+		
+		double result = evalPostfix(postfix, v); 
 		
 		return result;
 	}
 	
-	public double evalPostfix(final Stack<String> postfix) {
+	public double evalPostfix(final Stack<String> postfix, boolean v) {
 		
 		final Stack<Double> operands = new Stack<>();
 		
@@ -68,7 +69,7 @@ public class ArithmeticEvaluation {
 	}
 
 	
-	public Stack<String> infixToPostfix(final String infixExp) {
+	public Stack<String> infixToPostfix(final String infixExp, boolean v) {
 		
 		// Initialize stacks
 		operators = new Stack<>();
@@ -80,7 +81,9 @@ public class ArithmeticEvaluation {
 		String currentOpand = "";
 		for (char currentSymbol : infix) {
 			
-			if (Character.isDigit(currentSymbol) || Character.isAlphabetic(currentSymbol)) {
+			if (v) System.out.println(currentSymbol);
+			
+			if (Character.isDigit(currentSymbol) || Character.isAlphabetic(currentSymbol)) {				
 				currentOpand += currentSymbol;
 				continue;
 			}
@@ -90,11 +93,14 @@ public class ArithmeticEvaluation {
 				
 				// Add the current opand to the postfix
 				if (!currentOpand.equals("")) {
+					
+					if (v) System.out.println("Found an operand!");
+					
 					postfix.add(currentOpand);
 					currentOpand = "";
 				}
 				
-				handleOperator(op);	
+				handleOperator(op);
 			}
 		}
 		return postfix;

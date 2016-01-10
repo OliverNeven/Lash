@@ -1,6 +1,11 @@
 package com.oliverneven.lash.main.parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 import com.oliverneven.lash.main.Lash;
 import com.oliverneven.lash.main.token.TokenBlock;
@@ -26,7 +31,7 @@ public class Parser {
 		for (int i = 0; i < main_block.getTokenList().size(); i ++) {
 			
 			// Store the current token
-			TokenData token = main_block.getTokenList().get(i);		
+			TokenData token = main_block.getTokenList().get(i);
 			
 			// The token arguments that will be parsed to the commands and operations
 			ArrayList<TokenData> args = null;
@@ -46,12 +51,25 @@ public class Parser {
 				args = new ArrayList<>();
 				args.add(pre_token);
 				args.addAll(main_block.charsUntilToken(i + 1, TokenType.TERMINATOR));
-				i += args.size() - 2;
+				i += args.size();
 				
-				// Execute the operation
-				token.getTokenType().getAction().exec(args);
+				// Evaluate expressions and conditions
+				args = evaluateArguments(args);
 				
-				if (v) System.out.format("Parsed %s as arguments for the %s operation.\n", args, token);
+				// If there is 2 or more arguments
+				if (args.size() >= 2) {
+				
+					if (v) System.out.format("Parsed %s as arguments for the %s operation.\n", args, token);
+					
+					// Execute the operation
+					token.getTokenType().getAction().exec(args);
+					
+				} else {
+					
+					// ... else print an error, a minimum of 2 arguments is need in a binary operation
+					Lash.err(String.format("The operation %s needs a minimum of 2 arguments to be parsed", token), 404);					
+				}
+				
 			}
 			
 			// If the token is an command
@@ -61,94 +79,84 @@ public class Parser {
 				
 				// The token arguments that will be parsed to the command
 				args = main_block.charsUntilToken(i + 1, TokenType.TERMINATOR);
-				i += args.size() - 2;
+				i += args.size() + 1;
+				
+				// Evaluate expressions and conditions
+				args = evaluateArguments(args);
 				
 				if (v) System.out.format("Parsed %s as arguments for the %s command.\n", args, token);
+				
+				// Execute the command
+				token.getTokenType().getAction().exec(args);
+				
 			}
 			
-			else if (v) System.out.format("Found a(n) %s token.\n", token);
+			// If the token is a naked block (naked block: not an argument for a block statement)
+			else if (token.getTokenType() == TokenType.BLOCK) {
+				
+				if (v) System.out.format("Found a(n) %s token.\n", token); 
+				
+				new Parser((TokenBlock) token.getData()).parse(v);
+				
+			}
 			
-			System.out.println(TokenType.ECHO.isCommand());
+			// ... else just print the found token
+			else if (v) System.out.format("Found a(n) %s token.\n", token);
 			
 			
 			// Set the token as the previous token
 			pre_token = token;
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		/*
-		ArrayList<TokenData> args;
-		TokenData arg_token;
-		int block_count = 0;
-		for (int i = 0; i < tokens.size(); i ++) {
-			TokenData token = tokens.get(i);
-			
-			//System.out.println(token);
-			
-			if (token.isCommand() || token.isTag() || token.isOperationCommand()) {
-				
-				System.out.println("Found a(n) " + token.getTokenType() + " command found!");
-				
-				if (token.isOperationCommand()) {
-					
-					args = new ArrayList<>();
-					args.add(tokens.get(i - 1));
-					
-					for (i ++; i < tokens.size(); i ++) {
-						arg_token = tokens.get(i);
-						
-						if (arg_token.getTokenType() == TokenType.TERMINATOR && block_count == 0)
-							break;
-						
-						args.add(arg_token);
-					}
-					
-					
-					
-				} else {
-				
-					args = new ArrayList<>();
-					
-					for (i ++; i < tokens.size(); i ++) {
-						arg_token = tokens.get(i);
-						
-						if (arg_token.getTokenType() == TokenType.TERMINATOR && block_count == 0)
-							break;
-						
-						args.add(arg_token);
-					}
-				
-				}
-				
-				System.out.println("Parsed " + args + " as arguments for the " + token.getTokenType() + " command");
-				
-				if (token.isCommand() || token.isOperationCommand())
-					token.getTokenType().getAction().exec(args);
-				
-				//System.out.println();
-				
-			} else if (token.isBlock()) {
-				
-				System.out.println("{");
-				
-				new Parser((TokenBlock) token.getData()).parse();
-				
-				System.out.println("}");
-				
-			}
-			
-		}
-		*/
 	}
 	
-	
+	/** Evaluates all expressions and conditions in the given list */
+	private ArrayList<TokenData> evaluateArguments(ArrayList<TokenData> args) {
+		
+		// Evaluate expressions and conditions inside the arguments
+		for (int j = 0; j < args.size(); j ++) {
+			TokenData arg = args.get(j);
+			if (arg.getTokenType() == TokenType.EXPRESSION || arg.getTokenType() == TokenType.CONDITION) {
+				ScriptEngineManager factory = new ScriptEngineManager();
+			    ScriptEngine engine = factory.getEngineByName("JavaScript");
+			    
+			    // Parse variables to the engine
+			    HashMap<String, TokenData> map = Lash.VARIABLE_REGISTRY.getVariableMap();
+			    for (String key : map.keySet())
+			    	engine.put(key, map.get(key).getData().toString());
+			    
+			    
+			    String result = null,
+			    	   infix = arg.getData().toString().substring(1, arg.getData().toString().length() - 1).replace("$", ""),
+			    	   infix_to_evaluate = new String();
+			    
+			    // Remove braces around expressions
+			    for (int k = 0; k < infix.toCharArray().length; k ++) {
+			    	char c = infix.toCharArray()[k], nc;
+			    	if (k != infix.toCharArray().length - 1)
+			    		nc = infix.toCharArray()[k + 1];
+			    	else
+			    		nc = ' ';
+			    	
+			    	// If the braces are not apart of a less or grater operator
+			    	if (!(c == '<' && nc != '<') && !(c == '>' && nc != '>'))
+			    		infix_to_evaluate += c; // ... append the character
+			    }
+			    
+			    try {
+			    	result = engine.eval(infix_to_evaluate).toString();
+				} catch (ScriptException e) {
+					Lash.err(e, 404);
+				}
+			    
+			    if (arg.getTokenType() == TokenType.EXPRESSION) {
+			    	if (result.endsWith(".0"))
+			    		result = result.substring(0, result.length() - 2);
+			    	args.set(j, new TokenData(result, TokenType.NUM));
+			    } else 
+			    	args.set(j, new TokenData(result, TokenType.BOOL));
+			}
+		}
+		return args;
+	}
 	
 }

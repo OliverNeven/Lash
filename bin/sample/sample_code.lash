@@ -1,2 +1,1 @@
-$foo = "Hello, world!";
-echo $foo;
+if [ true ] { echo "2"; }

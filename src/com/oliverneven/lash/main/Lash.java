@@ -3,6 +3,7 @@ package com.oliverneven.lash.main;
 import java.io.File;
 import java.util.Scanner;
 
+import com.oliverneven.lash.main.eval.ArithmeticEvaluater;
 import com.oliverneven.lash.main.lexer.Lexer;
 import com.oliverneven.lash.main.parser.Parser;
 import com.oliverneven.lash.main.token.TokenBlock;
@@ -13,6 +14,7 @@ public class Lash {
 	
 	public final static VariableRegistry VARIABLE_REGISTRY = new VariableRegistry();
 	public final static Scanner RAW_INPUT = new Scanner(System.in);
+	public final static ArithmeticEvaluater ARITH_EVAL = new ArithmeticEvaluater();
 	
 	private final static boolean DEBUG = true;
 	
@@ -36,14 +38,14 @@ public class Lash {
 			exit(404);
 		}
 		
-		System.out.println("\n\tTokenizing\n");
+		if (DEBUG) System.out.println("\n\tTokenizing\n");
 		
 		Lexer lexer = new Lexer(code_file);
 		TokenBlock token_block = lexer.lex(DEBUG);
 		
 		// if (true) return;
 		
-		System.out.println("\n\tParsing\n");
+		if (DEBUG) System.out.println("\n\tParsing\n");
 		
 		Parser parser = new Parser(token_block);
 		parser.parse(DEBUG);

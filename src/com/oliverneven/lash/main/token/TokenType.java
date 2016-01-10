@@ -23,11 +23,11 @@ public enum TokenType {
 					Lash.out("");
 					Lash.err("The argument " + arg.getTokenType() + " has no data to be printed");
 					return false;
-				} else if (arg.getTokenType() == VARIABLE) {
+				} else if (arg.getTokenType() == VARIABLE)
 					Lash.out(Lash.VARIABLE_REGISTRY.getVariable(arg.getData().toString()).getData().toString() + "");
-				} else {
+				else
 					Lash.out(arg.getData().toString() + "");
-				}
+				
 			Lash.outln("");
 			return true;
 		}
@@ -47,6 +47,12 @@ public enum TokenType {
 	
 	IF("IF", false, new TokenAction(){
 		public boolean exec(ArrayList<TokenData> args) {
+			
+			// System.out.println(args.get(0).getData().toString());
+			
+			if (args.get(0).getData().toString().equals(new String("true")))
+				new Parser((TokenBlock) args.get(1).getData()).parse(false);
+			
 			return true;
 		}
 	}),
@@ -57,17 +63,9 @@ public enum TokenType {
 	BLOCK_OPEN("{", false),
 	BLOCK_CLOSE("}", false),
 	
-	// Condition
-	
-	CONDITION_EQ("==", false, new TokenAction() {
-		public boolean exec(ArrayList<TokenData> args) {
-			return true;
-		}
-	}),
-	
 	// Variable
 	
-	VARIABLE("\\$[a-zA-Z][a-zA-Z0-9]*", true),
+	VARIABLE("\\$[a-zA-Z_][a-zA-Z0-9_]*", true),
 	
 	// Assignment
 	
@@ -96,7 +94,10 @@ public enum TokenType {
 	
 	// Data types
 	
-	EXPRESSION("\\(|\\)|\\d+\\.?\\d*|[+-/%^*]", true), // Same for integers and floating points
+	EXPRESSION("<((?:\\d*|\\+|-|\\*|\\/|%|\\^|\\(|\\)|\\$[a-zA-Z_][a-zA-Z0-9_]*)\\s*)*>", true),
+	CONDITION("\\[(?:true|false|\\s+|\\$[a-zA-Z_][a-zA-Z0-9_]*|(?:=|\\||&|<|>){2}|<((?:\\d*|\\+|-|\\*|\\/|%|\\^|\\(|\\)|\\$[a-zA-Z_][a-zA-Z0-9_]*)\\s*)*>|\".*\")*\\]", true),
+	NUM("<NUM>", false),
+	BOOL("<BOOL>", false),
 	STRING("\".*\"", true);
 	
 	

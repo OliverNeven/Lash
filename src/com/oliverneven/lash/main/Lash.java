@@ -16,7 +16,7 @@ public class Lash {
 	public final static Scanner RAW_INPUT = new Scanner(System.in);
 	public final static ArithmeticEvaluater ARITH_EVAL = new ArithmeticEvaluater();
 	
-	private final static boolean DEBUG = false;
+	private final static boolean DEBUG = true;
 	private final static boolean SAMPLEFILE = true;
 	
 	public static void main(String[] args) {

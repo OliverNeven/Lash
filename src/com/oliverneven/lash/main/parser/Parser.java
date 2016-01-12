@@ -104,8 +104,16 @@ public class Parser {
 				
 				if (v) System.out.format("Parsed %s as arguments for the %s command.\n", args, token);
 				
+				// If the command is a while loop
+				if (token.getTokenType() == TokenType.WHILE) {
+					args.add(main_block.getTokenList().get(i - args.size()));
+					
+					// Execute the command
+					condition = token.getTokenType().getAction().exec(args);
+				}
+				
 				// If the command is an else statement
-				if (token.getTokenType() == TokenType.ELSE || token.getTokenType() == TokenType.ELIF) {
+				else if (token.getTokenType() == TokenType.ELSE || token.getTokenType() == TokenType.ELIF) {
 					
 					// If the previous token was an if statement
 					if (pre_token.getTokenType() == TokenType.IF || pre_token.getTokenType() == TokenType.ELIF) {
@@ -199,6 +207,54 @@ public class Parser {
 			}
 		}
 		return args;
+	}
+	
+	/** Evaluates a token */
+	public static TokenData evaluateToken(TokenData token) {
+		
+		if (token.getTokenType() == TokenType.EXPRESSION || token.getTokenType() == TokenType.CONDITION) {
+			ScriptEngineManager factory = new ScriptEngineManager();
+		    ScriptEngine engine = factory.getEngineByName("JavaScript");
+		    
+		    // Parse variables to the engine
+		    HashMap<String, TokenData> map = Lash.VARIABLE_REGISTRY.getVariableMap();
+		    for (String key : map.keySet())
+		    	engine.put(key, map.get(key).getData().toString());
+		    
+		    
+		    String result = null,
+		    	   infix = token.getData().toString().substring(1, token.getData().toString().length() - 1).replace("$", ""),
+		    	   infix_to_evaluate = new String();
+		    
+		    // Remove braces around expressions
+		    for (int k = 0; k < infix.toCharArray().length; k ++) {
+		    	char c = infix.toCharArray()[k], nc;
+		    	if (k != infix.toCharArray().length - 1)
+		    		nc = infix.toCharArray()[k + 1];
+		    	else
+		    		nc = ' ';
+		    	
+		    	// If the braces are not apart of a less or grater operator
+		    	if (!(c == '<' && nc != '<') && !(c == '>' && nc != '>'))
+		    		infix_to_evaluate += c; // ... append the character
+		    }
+		    
+		    try {
+		    	result = engine.eval(infix_to_evaluate).toString();
+			} catch (ScriptException e) {
+				Lash.err(e, 404);
+			}
+		    
+		    if (token.getTokenType() == TokenType.EXPRESSION) {
+		    	if (result.endsWith(".0"))
+		    		result = result.substring(0, result.length() - 2);
+		    	return new TokenData(result, TokenType.NUM);
+		    } else if (result.trim().equalsIgnoreCase("true"))
+		    	return new TokenData(true, TokenType.BOOL);
+		    else
+		    	return new TokenData(false, TokenType.BOOL);
+		} else return new TokenData(null, TokenType.UNKNOWN);
+		
 	}
 	
 }

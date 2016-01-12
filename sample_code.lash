@@ -1,8 +1,10 @@
-
-ECHO "To soon, he wasn't ready!";
-
 START;
 
-ECHO "In time!";
+$foo = <1>;
 
-EXIT "See ya!";
+WHILE [$foo << <5>] {
+	ECHO $foo;
+	$foo = <$foo + 1>;
+};
+
+EXIT "Exit with code " <0>;

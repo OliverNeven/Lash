@@ -91,6 +91,16 @@ public enum TokenType {
 		}
 	}),
 	
+	WHILE("WHILE", false, new TokenAction(){
+		public boolean exec(ArrayList<TokenData> args) {
+			
+			while ((Boolean) Parser.evaluateToken(args.get(args.size() - 1)).getData())
+				new Parser((TokenBlock) args.get(1).getData()).parse(false);
+			
+			return true;
+		}
+	}),
+	
 	// Block
 	
 	BLOCK("\\{(.*)\\}", true),

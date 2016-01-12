@@ -1,0 +1,8 @@
+
+ECHO "To soon, he wasn't ready!";
+
+START;
+
+ECHO "In time!";
+
+EXIT "See ya!";

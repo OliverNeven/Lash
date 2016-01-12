@@ -4,9 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import com.oliverneven.lash.main.Lash;
 import com.oliverneven.lash.main.token.TokenBlock;
@@ -183,7 +181,15 @@ public class Lexer {
 		
 		
 		
-		if (v) System.out.format("Total found tokens: %s\n", main_block);
+		if (v) {
+			System.out.println("Total tokens found: ");
+			for (TokenData tok : main_block.getTokenList()) {
+				System.out.print(tok + ", ");
+				if (tok.getTokenType() == TokenType.TERMINATOR)
+					System.out.println();
+			}
+		}
+		
 		return main_block;
 	}
 	

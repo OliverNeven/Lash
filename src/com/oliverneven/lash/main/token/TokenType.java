@@ -13,9 +13,22 @@ public enum TokenType {
 	ENDOFLINE("<LN>", false),
 	TERMINATOR(";", false),
 	COMMENT("((##).*(##))|(#.*" + ENDOFLINE.getRegex() + ")", true),
+	START("START", false),
 	
 	// Commands
 	
+	EXIT("EXIT", false, new TokenAction() {
+		public boolean exec(ArrayList<TokenData> args) {
+			
+			if (args.size() >= 1)
+				for (TokenData tok : args)
+					Lash.out(tok.getData().toString());
+			
+			Lash.exit(0);
+			
+			return true;
+		}
+	}),
 	ECHO("ECHO", false, new TokenAction() {
 		public boolean exec(ArrayList<TokenData> args) {
 			for (TokenData arg : args)
@@ -48,10 +61,31 @@ public enum TokenType {
 	IF("IF", false, new TokenAction(){
 		public boolean exec(ArrayList<TokenData> args) {
 			
-			// System.out.println(args.get(0).getData().toString());
+			boolean condition = (Boolean) args.get(0).getData(); 
 			
-			if (args.get(0).getData().toString().equals(new String("true")))
+			if (condition)
 				new Parser((TokenBlock) args.get(1).getData()).parse(false);
+			
+			return condition;
+		}
+	}),
+	
+	ELIF("ELIF", false, new TokenAction(){
+		public boolean exec(ArrayList<TokenData> args) {
+			
+			boolean condition = (Boolean) args.get(0).getData(); 
+			
+			if (condition)
+				new Parser((TokenBlock) args.get(1).getData()).parse(false);
+			
+			return condition;
+		}
+	}),
+	
+	ELSE("ELSE", false, new TokenAction(){
+		public boolean exec(ArrayList<TokenData> args) {
+			
+			new Parser((TokenBlock) args.get(0).getData()).parse(false);
 			
 			return true;
 		}

@@ -27,8 +27,16 @@ public class Parser {
 		// The previous iterated token
 		TokenData pre_token = new TokenData(new String(";"), TokenType.TERMINATOR);
 		
+		// The previous iterated if statement condition
+		boolean pre_condition = false;
+		
 		// Iterate through each token
 		for (int i = 0; i < main_block.getTokenList().size(); i ++) {
+			
+			// Look for the the entry point
+			if (i == 0) {
+				
+			}
 			
 			// Store the current token
 			TokenData token = main_block.getTokenList().get(i);
@@ -77,6 +85,8 @@ public class Parser {
 				
 				if (v) System.out.format("Found a(n) %s command.\n", token);
 				
+				boolean condition = false;
+				
 				// The token arguments that will be parsed to the command
 				args = main_block.charsUntilToken(i + 1, TokenType.TERMINATOR);
 				i += args.size() + 1;
@@ -86,8 +96,30 @@ public class Parser {
 				
 				if (v) System.out.format("Parsed %s as arguments for the %s command.\n", args, token);
 				
-				// Execute the command
-				token.getTokenType().getAction().exec(args);
+				// If the command is an else statement
+				if (token.getTokenType() == TokenType.ELSE || token.getTokenType() == TokenType.ELIF) {
+					
+					// If the previous token was an if statement
+					if (pre_token.getTokenType() == TokenType.IF || pre_token.getTokenType() == TokenType.ELIF) {
+						
+						// If it's condition was false, then execute the else statement
+						if (!pre_condition)
+							condition = token.getTokenType().getAction().exec(args);		
+						
+					} else 
+						// ... else if the previous token, wasn't an if statement, then cast an error because there is nothing 'to else' from.
+						Lash.err("No prior if or elif statement for the current statement", 404);
+						
+				} else
+					// Execute the command
+					condition = token.getTokenType().getAction().exec(args);
+				
+				// If the previous command was an if or elif statement, set the condition to its result
+				if (token.getTokenType() == TokenType.IF)
+					pre_condition = condition;
+				else if (token.getTokenType() == TokenType.ELIF && !pre_condition)
+					pre_condition = condition;
+					
 				
 			}
 			
@@ -152,8 +184,10 @@ public class Parser {
 			    	if (result.endsWith(".0"))
 			    		result = result.substring(0, result.length() - 2);
 			    	args.set(j, new TokenData(result, TokenType.NUM));
-			    } else 
-			    	args.set(j, new TokenData(result, TokenType.BOOL));
+			    } else if (result.trim().equalsIgnoreCase("true"))
+			    	args.set(j, new TokenData(true, TokenType.BOOL));
+			    else
+			    	args.set(j, new TokenData(false, TokenType.BOOL));
 			}
 		}
 		return args;

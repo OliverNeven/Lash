@@ -16,23 +16,21 @@ public class Lash {
 	public final static Scanner RAW_INPUT = new Scanner(System.in);
 	public final static ArithmeticEvaluater ARITH_EVAL = new ArithmeticEvaluater();
 	
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
+	private final static boolean SAMPLEFILE = true;
 	
 	public static void main(String[] args) {
 		
-		// TODO: Follow tutorial https://www.youtube.com/watch?v=pN5GYufp31E
+		File code_file = null;
 		
-		File code_file;
+		if (SAMPLEFILE) args = new String[] {"sample_code.lash"};
 		
-		/* TODO: Remove debug code */ code_file = new File("src\\sample\\sample_code.lash");
-		/*
 		if (args.length >= 1)
 			code_file = new File(args[0]);
 		else {
-			err("No specified file to run");
-			exit(404);
+			err("No specified file to run", 404);
 		}
-		*/
+		
 		
 		if (!isValidFile(code_file, true)) {
 			exit(404);

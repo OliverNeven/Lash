@@ -34,8 +34,16 @@ public class Parser {
 		for (int i = 0; i < main_block.getTokenList().size(); i ++) {
 			
 			// Look for the the entry point
-			if (i == 0) {
+			if (i == 0) for (i = i; i < main_block.getTokenList().size(); i ++) {
+					
+				// If the start token is found, then break the loop;
+				if (main_block.getTokenList().get(i).getTokenType() == TokenType.START) break;
 				
+				// If the start token wasn't found, enter at line 1
+				if (i == main_block.getTokenList().size() - 1) {
+					i = 0;
+					break;
+				}
 			}
 			
 			// Store the current token

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
+<<<<<<< HEAD
 	<name>Lash_v0.2</name>
+=======
+	<name>Lash</name>
+>>>>>>> 2e50c0475b62788c379d140a5520ad8dea2384d9
 	<comment></comment>
 	<projects>
 	</projects>
